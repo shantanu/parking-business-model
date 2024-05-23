@@ -1,61 +1,50 @@
-def get_locations(
-    months,
-    num_partners, 
-    max_locations_per_partner, 
-    months_between_partners, 
-    months_between_location_for_partner, 
-    first_month_of_location_for_partner,
-    location_license_fee,
-    gateway_license_fee,
-    camera_license_fee,
-    num_gateways_per_location,
-    num_cameras_per_gateway
-   ):
-    
-    new_locations = [0]*months
-    new_partners = [0]*months
-    location_license_fees = [0]*months
-    gateway_license_fees = [0]*months
-    cameras_license_fees = [0]*months
-    cumulative_gateways = [0]*months
-    cumulative_cameras = [0]*months
+from model_params import ModelParams, PartnerParams, LinearModelParams, PricingParams
 
-    for partner in range(num_partners):
-        month_started = 4 + months_between_partners*partner
-        if month_started >= months:
+def get_locations(params: ModelParams):
+    new_locations = [0]*params.months
+    new_partners = [0]*params.months
+    location_license_fees = [0]*params.months
+    gateway_license_fees = [0]*params.months
+    cameras_license_fees = [0]*params.months
+    cumulative_gateways = [0]*params.months
+    cumulative_cameras = [0]*params.months
+
+    for partner in range(params.partner_params.num_partners):
+        month_started = 4 + params.partner_params.months_between_partners*partner
+        if month_started >= params.months:
             break
         
         new_partners[month_started] += 1
         
-        for new_location in range(max_locations_per_partner):
-            new_location_month = month_started + first_month_of_location_for_partner + months_between_location_for_partner*new_location
+        for new_location in range(params.partner_params.max_locations):
+            new_location_month = month_started + params.location_model_params.first_month_of_location + params.location_model_params.months_between_location*new_location
             
-            if new_location_month >= months:
+            if new_location_month >= params.months:
                 break
             
             new_locations[new_location_month] += 1 
             
-            for m in range(new_location_month, months):
-                location_license_fees[m] += location_license_fee
-                gateway_license_fees[m] += gateway_license_fee * num_gateways_per_location
-                cameras_license_fees[m] += camera_license_fee * num_cameras_per_gateway * num_gateways_per_location
-    cumulative_partners = [0]*months
-    for i in range(1, months):
+            for m in range(new_location_month, params.months):
+                location_license_fees[m] += params.pricing_params.location_license_fee
+                gateway_license_fees[m] += params.pricing_params.gateway_license_fee * params.gateways_per_location
+                cameras_license_fees[m] += params.pricing_params.camera_license_fee * params.cameras_per_gateway * params.gateways_per_location
+    cumulative_partners = [0]*params.months
+    for i in range(1, params.months):
         cumulative_partners[i] = cumulative_partners[i-1] + new_partners[i]
         
-    cumulative_locations = [0]*months
-    cumulative_location_license_fees = [0]*months
-    cumulative_gateway_license_fees = [0]*months
-    cumulative_cameras_license_fees = [0]*months
-    for i in range(1, months):
+    cumulative_locations = [0]*params.months
+    cumulative_location_license_fees = [0]*params.months
+    cumulative_gateway_license_fees = [0]*params.months
+    cumulative_cameras_license_fees = [0]*params.months
+    for i in range(1, params.months):
         cumulative_locations[i] = cumulative_locations[i-1] + new_locations[i]
-        cumulative_gateways[i] = cumulative_gateways[i-1] + num_gateways_per_location*new_locations[i]
-        cumulative_cameras[i] = cumulative_cameras[i-1] + num_cameras_per_gateway*num_gateways_per_location*new_locations[i]
+        cumulative_gateways[i] = cumulative_gateways[i-1] + params.gateways_per_location*new_locations[i]
+        cumulative_cameras[i] = cumulative_cameras[i-1] + params.cameras_per_gateway*params.gateways_per_location*new_locations[i]
         cumulative_location_license_fees[i] = cumulative_location_license_fees[i-1] + location_license_fees[i]
         cumulative_gateway_license_fees[i] = cumulative_gateway_license_fees[i-1] + gateway_license_fees[i]
         cumulative_cameras_license_fees[i] = cumulative_cameras_license_fees[i-1] + cameras_license_fees[i]
-    total_license_fee = [0]*months
-    for i in range(1, months):
+    total_license_fee = [0]*params.months
+    for i in range(1, params.months):
         total_license_fee[i] = cumulative_location_license_fees[i] + cumulative_gateway_license_fees[i] + cumulative_cameras_license_fees[i]
         
     return (
@@ -72,32 +61,31 @@ def get_locations(
     )
 
 
+MONTHS: int = 84
+
 # Starter Model Parameters
-months = 84
-num_partners_starter = 50
-max_locations_per_partner_starter = 10
-months_between_partners_starter = 1
-months_between_location_for_partner_starter = 3
-first_month_of_location_for_partner_starter = 3
-location_license_fee_starter = 350  # $350 per month per location for Starter Model
-gateway_license_fee_starter = 75    # $75 per month per gateway for Starter Model
-num_gateways_per_location_starter = 10  # 10 gateways per location for Starter Model
-cameras_license_fee_starter = 0 #$0.75 per month per Cameras for Starter Model
-num_cameras_per_gateway_starter = 30 # 80 cameras per gateway for Starter Model
+starter_model_params: ModelParams = ModelParams(
+    months=MONTHS,
+    partner_params=PartnerParams(
+        num_partners=50,
+        max_locations=10,
+        months_between_partners=1
+    ),
+    location_model_params=LinearModelParams(
+        first_month_of_location=3,
+        months_between_location=3
+    ),
+    pricing_params=PricingParams(
+        location_license_fee=350,
+        gateway_license_fee=75,
+        camera_license_fee=0.75
+    ),
+    gateways_per_location=10,
+    cameras_per_gateway=30
+)
 
 # Call the function for the Starter Model
-starter_model_output = get_locations(
-    months,
-    num_partners_starter, 
-    max_locations_per_partner_starter, 
-    months_between_partners_starter, 
-    months_between_location_for_partner_starter, 
-    first_month_of_location_for_partner_starter,
-    location_license_fee_starter,
-    gateway_license_fee_starter,
-    cameras_license_fee_starter,
-    num_gateways_per_location_starter,
-    num_cameras_per_gateway_starter)
+starter_model_output = get_locations(starter_model_params)
 
 # Unpack the output for the Starter Model
 (
@@ -114,7 +102,7 @@ starter_model_output = get_locations(
    
 ) = starter_model_output
 
-
+"""
 # Advanced Model Parameters
 num_partners_advanced = 40
 max_locations_per_partner_advanced = 40
@@ -196,57 +184,57 @@ enterprise_model_output = get_locations(
     cumulative_cameras_enterprise,
     total_license_fee_enterprise
 ) = enterprise_model_output
-
+"""
 
 cost_per_month = 150000
-cumulative_costs = [0]*months
+cumulative_costs = [0]*MONTHS
 
-for i in range(1, months):
+for i in range(1, MONTHS):
     cumulative_costs[i] = cost_per_month + cumulative_costs[i-1]
 print("TOTAL CUMULATIVE COSTS: ", cumulative_costs)
 
 
-total_license_fee_per_month_sum_all_models = [0] * months
-for i in range(months):
+total_license_fee_per_month_sum_all_models = [0] * MONTHS
+for i in range(MONTHS):
     total_license_fee_per_month_sum_all_models[i] = \
-        total_license_fee_starter[i] \
-        + total_license_fee_advanced[i] \
-        + total_license_fee_enterprise[i]
+        total_license_fee_starter[i] #\
+       # + total_license_fee_advanced[i] \
+       # + total_license_fee_enterprise[i]
 
 print("TOTAL LICENSE FEE MONTHLY ALL MODELS: ", total_license_fee_per_month_sum_all_models)
 
-total_cumulative_license_fee_all_models = [0] * months
-for i in range(1, months):
+total_cumulative_license_fee_all_models = [0] * MONTHS
+for i in range(1, MONTHS):
     total_cumulative_license_fee_all_models[i] = total_license_fee_per_month_sum_all_models[i] + total_license_fee_per_month_sum_all_models[i-1]
 print("TOTAL CUMULATIVE LICENSE FEE ALL MODELS: ", total_cumulative_license_fee_all_models)
 
 
 
 sales_commission_rate = 0.15
-sales_commission_per_month = [0]*months
+sales_commission_per_month = [0]*MONTHS
 
-for i in range(1, months):
+for i in range(1, MONTHS):
     sales_commission_per_month[i] = total_license_fee_per_month_sum_all_models[i] * sales_commission_rate
     
 print("SALES COMMISSION PER MONTH: ", sales_commission_per_month)
 
-total_cumulative_sales_commission = [0] * months
-for i in range (1, months):
+total_cumulative_sales_commission = [0] * MONTHS
+for i in range (1, MONTHS):
     total_cumulative_sales_commission[i] = sales_commission_per_month[i] + sales_commission_per_month[i-1]
 print("TOTAL CUMULATIVE SALES COMMISSION: ", total_cumulative_sales_commission)
 
 
 
-cash_flow_per_month = [0]*months
+cash_flow_per_month = [0]*MONTHS
 
-for i in range(months):
+for i in range(MONTHS):
     cash_flow_per_month[i] = total_license_fee_per_month_sum_all_models[i] - sales_commission_per_month[i] - cost_per_month
 print("CASH FLOW PER MONTH: ", cash_flow_per_month)
 
 
-total_cumulative_cash_flow = [0] * months
+total_cumulative_cash_flow = [0] * MONTHS
 total_cumulative_cash_flow[0] = cash_flow_per_month[0]
-for i in range (1, months):
+for i in range (1, MONTHS):
     total_cumulative_cash_flow[i] = cash_flow_per_month[i] + cash_flow_per_month[i-1]
     
 print("TOTAL CUMULATIVE CASH FLOW : ", total_cumulative_cash_flow)
@@ -259,7 +247,7 @@ print("TOTAL CUMULATIVE CASH FLOW : ", total_cumulative_cash_flow)
 def discount(amount, rate, years):
     return (amount / ((1 + rate)**years))
     
-years = months//12
+years = MONTHS//12
 valuation_per_year = [0]*years
 
 rate = .10
@@ -289,7 +277,7 @@ print("Cumulative License Fees for Gateway:", cumulative_gateway_license_fees_st
 print("Cumulative License Fees for Cameras:", cumulative_cameras_license_fees_starter)
 print("Total License Fee STARTER:", total_license_fee_starter)
 print()
-
+"""
 # Print the output for the Advanced Model
 print("ADVANCED MODEL OUTPUT")
 print("New Partners:", new_partners_advanced)
@@ -317,7 +305,7 @@ print("Cumulative License Fees for Gateway:", cumulative_gateway_license_fees_en
 print("Cumulative License Fees for Cameras:", cumulative_cameras_license_fees_enterprise)
 print("Total License Fee ENTERPRISE:", total_license_fee_enterprise)
 
-
+"""
 
 
 
@@ -359,7 +347,7 @@ data_starter = {
     "Cumulative Cameras License Fees (Starter)": cumulative_cameras_license_fees_starter,
     "Total License Fee (Starter)": total_license_fee_starter
 }
-
+"""
 data_advanced = {
     "New Partners (Advanced)": new_partners_advanced,
     "Cumulative Partners (Advanced)": cumulative_partners_advanced,
@@ -385,7 +373,7 @@ data_enterprise = {
     "Cumulative Cameras License Fees (Enterprise)": cumulative_cameras_license_fees_enterprise,
     "Total License Fee (Enterprise)": total_license_fee_enterprise
 }
-
+"""
 # Define the data for valuation per year
 valuation_data = {
     "Year": list(range(1, years+1)),
