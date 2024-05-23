@@ -28,8 +28,8 @@ class PartnerParams():
 @dataclass
 class ModelParams():
     months: int
-    partner_params: PartnerParams
-    location_model_params: LinearModelParams # | GrowthModelParams
     gateways_per_location: int
     cameras_per_gateway: int
+    partner_params: PartnerParams
+    location_model_params: LinearModelParams # | GrowthModelParams
     pricing_params: PricingParams
