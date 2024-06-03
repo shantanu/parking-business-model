@@ -1,14 +1,17 @@
-from model_params import ModelParams, PartnerParams, LinearModelParams, PricingParams
+from model_params import (
+    ModelOutput, 
+    ModelParams, 
+    PartnerParams, 
+    LinearModelParams, 
+    GrowthModelParams, 
+    PricingParams
+)
 
-def get_locations(params: ModelParams):
-    new_locations = [0]*params.months
+def get_linear_model_locations(params: ModelParams) -> list[float]:
+    # INPUT: linear model parameters
+    # OUTPUT: new locations per month
     new_partners = [0]*params.months
-    location_license_fees = [0]*params.months
-    gateway_license_fees = [0]*params.months
-    cameras_license_fees = [0]*params.months
-    cumulative_gateways = [0]*params.months
-    cumulative_cameras = [0]*params.months
-
+    new_locations = [0]*params.months
     for partner in range(params.partner_params.num_partners):
         month_started = 4 + params.partner_params.months_between_partners*partner
         if month_started >= params.months:
@@ -23,11 +26,45 @@ def get_locations(params: ModelParams):
                 break
             
             new_locations[new_location_month] += 1 
+
+def get_growth_model_locations(params: ModelParams) -> list[float]:
+    # INPUT: linear model parameters
+    # OUTPUT: new locations per month
+    model_params = params.location_model_params
+
+    new_locations = [model_params.first_six_months_locations] * 6
+    new_locations.extend([model_params.next_six_months_locations] * 6)
+
+    remaining_months_locations = (model_params.total_locations - (model_params.first_six_months_locations*6) \
+                                  - (model_params.next_six_months_locations*6)) // params.months + 1
+
+    new_locations.extend([remaining_months_locations] * (params.months - 12))
+
+    return new_locations
+
+
+
+def get_locations(params: ModelParams):
+    new_locations = [0]*params.months
+    new_partners = [0]*params.months
+    location_license_fees = [0]*params.months
+    gateway_license_fees = [0]*params.months
+    cameras_license_fees = [0]*params.months
+    cumulative_gateways = [0]*params.months
+    cumulative_cameras = [0]*params.months
+
+    if isinstance(params.location_model_params, LinearModelParams):
+        new_locations = get_linear_model_locations(params.location_model_params, params.partner_params)
+    else:
+        new_locations = get_growth_model_locations(params)
+    
+    for new_location_month, locs in enumerate(new_locations):
+        for m in range(new_location_month, params.months):
+            location_license_fees[m] += params.pricing_params.location_license_fee*locs
+            gateway_license_fees[m] += params.pricing_params.gateway_license_fee * params.gateways_per_location * locs
+            cameras_license_fees[m] += params.pricing_params.camera_license_fee * params.cameras_per_gateway * params.gateways_per_location * locs
             
-            for m in range(new_location_month, params.months):
-                location_license_fees[m] += params.pricing_params.location_license_fee
-                gateway_license_fees[m] += params.pricing_params.gateway_license_fee * params.gateways_per_location
-                cameras_license_fees[m] += params.pricing_params.camera_license_fee * params.cameras_per_gateway * params.gateways_per_location
+
     cumulative_partners = [0]*params.months
     for i in range(1, params.months):
         cumulative_partners[i] = cumulative_partners[i-1] + new_partners[i]
@@ -47,33 +84,29 @@ def get_locations(params: ModelParams):
     for i in range(1, params.months):
         total_license_fee[i] = cumulative_location_license_fees[i] + cumulative_gateway_license_fees[i] + cumulative_cameras_license_fees[i]
         
-    return (
-        new_partners, 
-        cumulative_partners, 
-        new_locations, 
-        cumulative_locations, 
-        cumulative_location_license_fees, 
-        cumulative_gateway_license_fees,
-        cumulative_cameras_license_fees,
-        cumulative_gateways,
-        cumulative_cameras,
-        total_license_fee
+    return ModelOutput(
+        new_partners=new_partners, 
+        cumulative_partners=cumulative_partners, 
+        new_locations=new_locations, 
+        cumulative_locations=cumulative_locations, 
+        cumulative_location_license_fees=cumulative_location_license_fees, 
+        cumulative_gateway_license_fees=cumulative_gateway_license_fees,
+        cumulative_cameras_license_fees=cumulative_cameras_license_fees,
+        cumulative_gateways=cumulative_gateways,
+        cumulative_cameras=cumulative_cameras,
+        total_license_fee=total_license_fee
     )
 
 
 MONTHS: int = 84
 
-# Starter Model Parameters
-starter_model_params: ModelParams = ModelParams(
+# Parking Operator Model Parameters
+parking_operator_model_params: ModelParams = ModelParams(
     months=MONTHS,
-    partner_params=PartnerParams(
-        num_partners=50,
-        max_locations=10,
-        months_between_partners=1
-    ),
-    location_model_params=LinearModelParams(
-        first_month_of_location=3,
-        months_between_location=3
+    location_model_params=GrowthModelParams(
+        first_six_months_locations=5,
+        next_six_months_locations=12,
+        total_locations=2500,
     ),
     pricing_params=PricingParams(
         location_license_fee=350,
@@ -85,22 +118,7 @@ starter_model_params: ModelParams = ModelParams(
 )
 
 # Call the function for the Starter Model
-starter_model_output = get_locations(starter_model_params)
-
-# Unpack the output for the Starter Model
-(
-    new_partners_starter, 
-    cumulative_partners_starter, 
-    new_locations_starter, 
-    cumulative_locations_starter, 
-    cumulative_location_license_fees_starter, 
-    cumulative_gateway_license_fees_starter,
-    cumulative_cameras_license_fees_starter,
-    cumulative_gateways_starter,
-    cumulative_cameras_starter,
-    total_license_fee_starter,
-   
-) = starter_model_output
+parking_oprator_model_output = get_locations(parking_operator_model_params)
 
 """
 # Advanced Model Parameters
@@ -186,6 +204,42 @@ enterprise_model_output = get_locations(
 ) = enterprise_model_output
 """
 
+
+def print_model_output(model_name: str, model_output: ModelOutput):
+    print(f"{model_name} MODEL OUTPUT")
+    print("New Partners:", model_output.new_partners)
+    print("Cumulative Partners:", model_output.cumulative_partners)
+    print("New Locations:", model_output.new_locations)
+    print("Cumulative Locations:", model_output.cumulative_locations)
+    print("Cumulative Gateways:", model_output.cumulative_gateways)
+    print("Cumulative Cameras:", model_output.cumulative_cameras)
+    print("Cumulative License Fees for Location:", model_output.cumulative_location_license_fees)
+    print("Cumulative License Fees for Gateway:", model_output.cumulative_gateway_license_fees)
+    print("Cumulative License Fees for Cameras:", model_output.cumulative_cameras_license_fees)
+    print(f"Total License Fee {model_name}:", model_output.total_license_fee)
+    print()
+
+
+print("===================")
+print()
+
+
+
+
+# Print the output for the Starter Model
+print_model_output("STARTER", parking_model_output)
+
+"""
+# Print the output for the Advanced Model
+print_model_output("ADVANCED", advanced_model_output)
+
+# Print the output for the Enterprise Model
+print_model_output("ENTERPRISE", enterprise_model_output)
+
+
+"""
+
+
 cost_per_month = 150000
 cumulative_costs = [0]*MONTHS
 
@@ -197,7 +251,7 @@ print("TOTAL CUMULATIVE COSTS: ", cumulative_costs)
 total_license_fee_per_month_sum_all_models = [0] * MONTHS
 for i in range(MONTHS):
     total_license_fee_per_month_sum_all_models[i] = \
-        total_license_fee_starter[i] #\
+        parking_operator_model_output.total_license_fee[i] #\
        # + total_license_fee_advanced[i] \
        # + total_license_fee_enterprise[i]
 
@@ -261,51 +315,6 @@ for year in range(1, years+1):
 
 print("VALUATION PER YEAR: ", [ f'${round(elem):,}' for elem in valuation_per_year ])
 
-print("===================")
-print()
-
-# Print the output for the Starter Model
-print("STARTER MODEL OUTPUT")
-print("New Partners:", new_partners_starter)
-print("Cumulative Partners:", cumulative_partners_starter)
-print("New Locations:", new_locations_starter)
-print("Cumulative Locations:", cumulative_locations_starter)
-print("Cumulative Gateways:", cumulative_gateways_starter)
-print("Cumulative Cameras:", cumulative_cameras_starter)
-print("Cumulative License Fees for Location:", cumulative_location_license_fees_starter)
-print("Cumulative License Fees for Gateway:", cumulative_gateway_license_fees_starter)
-print("Cumulative License Fees for Cameras:", cumulative_cameras_license_fees_starter)
-print("Total License Fee STARTER:", total_license_fee_starter)
-print()
-"""
-# Print the output for the Advanced Model
-print("ADVANCED MODEL OUTPUT")
-print("New Partners:", new_partners_advanced)
-print("Cumulative Partners:", cumulative_partners_advanced)
-print("New Locations:", new_locations_advanced)
-print("Cumulative Locations:", cumulative_locations_advanced)
-print("Cumulative Gateways:", cumulative_gateways_advanced)
-print("Cumulative Cameras:", cumulative_cameras_advanced)
-print("Cumulative License Fees for Location:", cumulative_location_license_fees_advanced)
-print("Cumulative License Fees for Gateway:", cumulative_gateway_license_fees_advanced)
-print("Cumulative License Fees for Cameras:", cumulative_cameras_license_fees_advanced)
-print("Total License Fee ADVANCED:", total_license_fee_advanced)
-print()
-
-# Print the output for the Enterprise Model
-print("ENTERPRISE MODEL OUTPUT")
-print("New Partners:", new_partners_enterprise)
-print("Cumulative Partners:", cumulative_partners_enterprise)
-print("New Locations:", new_locations_enterprise)
-print("Cumulative Locations:", cumulative_locations_enterprise)
-print("Cumulative Gateways:", cumulative_gateways_enterprise)
-print("Cumulative Cameras:", cumulative_cameras_enterprise)
-print("Cumulative License Fees for Location:", cumulative_location_license_fees_enterprise)
-print("Cumulative License Fees for Gateway:", cumulative_gateway_license_fees_enterprise)
-print("Cumulative License Fees for Cameras:", cumulative_cameras_license_fees_enterprise)
-print("Total License Fee ENTERPRISE:", total_license_fee_enterprise)
-
-"""
 
 
 
