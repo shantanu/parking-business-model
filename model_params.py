@@ -31,8 +31,8 @@ class ModelParams():
     months: int
     gateways_per_location: int
     cameras_per_gateway: int
-    location_model_params: LinearModelParams | GrowthModelParams
     pricing_params: PricingParams
+    location_model_params: LinearModelParams | GrowthModelParams
     partner_params: Optional[PartnerParams] = None
     
 
@@ -49,3 +49,6 @@ class ModelOutput():
     new_partners: Optional[list[int]] = None
     cumulative_partners: Optional[list[int]] = None
 
+@dataclass
+class CostParams():
+    cost_per_month: float
