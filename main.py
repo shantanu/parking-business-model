@@ -1,12 +1,4 @@
-from model_params import (
-    CostParams,
-    ModelOutput, 
-    ModelParams, 
-    PartnerParams, 
-    LinearModelParams, 
-    GrowthModelParams, 
-    PricingParams
-)
+from model_params import *
 
 from model import (
     get_locations,
@@ -16,13 +8,16 @@ from model import (
 from costs import (
     get_costs
 )
+from sales import get_sales_commission
+from valuation import get_cash_flow, format_money, get_yearly_valuation
 
 from itertools import accumulate
 
 
 MONTHS: int = 60
 FIXED_COST: int = 100000
-SALES_COMMISSION: int = .25
+SALES_COMMISSION: float = .25
+DISCOUNT_RATE: float = .10
 
 
 # Parking Operator Model Parameters
@@ -138,7 +133,8 @@ cost_params: CostParams = CostParams(
     cost_per_month=100000
 )
 
-cumulative_costs = accumulate(get_costs(cost_params, MONTHS))
+cost_per_month = get_costs(cost_params, MONTHS)
+cumulative_costs = accumulate(cost_per_month)
 print("TOTAL CUMULATIVE COSTS: ", list(cumulative_costs))
 
 
@@ -150,61 +146,50 @@ total_license_fee_per_month_sum = [
 )]
 print("TOTAL LICENSE FEE MONTHLY ALL MODELS: ", total_license_fee_per_month_sum)
 
-total_cumulative_license_fee_all_models = accumulate(total_license_fee_per_month_sum)
-print("TOTAL CUMULATIVE LICENSE FEE ALL MODELS: ", list(total_cumulative_license_fee_all_models))
+total_cumulative_license_fee_all_models = list(accumulate(total_license_fee_per_month_sum))
+print("TOTAL CUMULATIVE LICENSE FEE ALL MODELS: ", total_cumulative_license_fee_all_models)
 
 
 
-sales_commission_rate = 0.15
-sales_commission_per_month = [0]*MONTHS
 
-for i in range(1, MONTHS):
-    sales_commission_per_month[i] = total_license_fee_per_month_sum_all_models[i] * sales_commission_rate
-    
+sales_params: SalesParams = SalesParams(
+    commission_rate=SALES_COMMISSION
+)
+
+sales_commission_per_month = get_sales_commission(sales_params, total_license_fee_per_month_sum)
 print("SALES COMMISSION PER MONTH: ", sales_commission_per_month)
 
-total_cumulative_sales_commission = [0] * MONTHS
-for i in range (1, MONTHS):
-    total_cumulative_sales_commission[i] = sales_commission_per_month[i] + sales_commission_per_month[i-1]
+total_cumulative_sales_commission = list(accumulate(sales_commission_per_month))
 print("TOTAL CUMULATIVE SALES COMMISSION: ", total_cumulative_sales_commission)
 
 
 
-cash_flow_per_month = [0]*MONTHS
+cash_flow_per_month = [
+    get_cash_flow(fee, commission, cost) for fee, commission, cost 
+        in zip(
+            total_license_fee_per_month_sum,
+            sales_commission_per_month,
+            cost_per_month
+        )
+]
 
-for i in range(MONTHS):
-    cash_flow_per_month[i] = total_license_fee_per_month_sum_all_models[i] - sales_commission_per_month[i] - cost_per_month
 print("CASH FLOW PER MONTH: ", cash_flow_per_month)
 
 
-total_cumulative_cash_flow = [0] * MONTHS
-total_cumulative_cash_flow[0] = cash_flow_per_month[0]
-for i in range (1, MONTHS):
-    total_cumulative_cash_flow[i] = cash_flow_per_month[i] + cash_flow_per_month[i-1]
-    
+total_cumulative_cash_flow = list(accumulate(cash_flow_per_month))   
 print("TOTAL CUMULATIVE CASH FLOW : ", total_cumulative_cash_flow)
 
 
 
 
+valuation_params: ValuationParams = ValuationParams(
+    years=MONTHS//12,
+    discount_rate=DISCOUNT_RATE
+)
 
+valuation_per_year = get_yearly_valuation(valuation_params, total_cumulative_cash_flow)
 
-def discount(amount, rate, years):
-    return (amount / ((1 + rate)**years))
-    
-years = MONTHS//12
-valuation_per_year = [0]*years
-
-rate = .10
-
-
-    
-    
-for year in range(1, years+1):
-    valuation_per_year[year-1] = discount(total_cumulative_cash_flow[year*12-1], rate, year)    
-    
-
-print("VALUATION PER YEAR: ", [ f'${round(elem):,}' for elem in valuation_per_year ])
+print("VALUATION PER YEAR: ", [ format_money(elem) for elem in valuation_per_year ])
 
 
 

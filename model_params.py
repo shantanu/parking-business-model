@@ -52,3 +52,12 @@ class ModelOutput():
 @dataclass
 class CostParams():
     cost_per_month: float
+
+@dataclass
+class SalesParams():
+    commission_rate: float
+
+@dataclass
+class ValuationParams():
+    years: int
+    discount_rate: float
