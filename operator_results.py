@@ -10,8 +10,10 @@ from costs import (
 )
 from sales import get_sales_commission
 from valuation import get_cash_flow, format_money, get_yearly_valuation
+from export import model_output_to_dataframe
 
 from itertools import accumulate
+import pandas as pd
 
 
 MONTHS: int = 60
@@ -134,8 +136,8 @@ cost_params: CostParams = CostParams(
 )
 
 cost_per_month = get_costs(cost_params, MONTHS)
-cumulative_costs = accumulate(cost_per_month)
-print("TOTAL CUMULATIVE COSTS: ", list(cumulative_costs))
+cumulative_costs = list(accumulate(cost_per_month))
+print("TOTAL CUMULATIVE COSTS: ", cumulative_costs)
 
 
 total_license_fee_per_month_sum = [
@@ -188,110 +190,42 @@ valuation_params: ValuationParams = ValuationParams(
 )
 
 valuation_per_year = get_yearly_valuation(valuation_params, total_cumulative_cash_flow)
+formatted_valuation = [ format_money(elem) for elem in valuation_per_year ]
+print("VALUATION PER YEAR: ", formatted_valuation)
 
-print("VALUATION PER YEAR: ", [ format_money(elem) for elem in valuation_per_year ])
-
-
-
-
-
-
-#New code on 5/1/24
-import pandas as pd
 
 # Define the data for each DataFrame
 data = {
     "Total Cumulative Costs": cumulative_costs,
-    "Total License Fee Monthly (All Models)": total_license_fee_per_month_sum_all_models,
+    "Total License Fee Monthly (All Models)": total_license_fee_per_month_sum,
     "Total Cumulative License Fee (All Models)": total_cumulative_license_fee_all_models,
     "Sales Commission Per Month": sales_commission_per_month,
     "Total Cumulative Sales Commission": total_cumulative_sales_commission,
     "Cash Flow Per Month": cash_flow_per_month,
-    "Total Cumulative Cash Flow": total_cumulative_cash_flow
+    "Total Cumulative Cash Flow": total_cumulative_cash_flow,
 }
 
-# Create DataFrames
-df_total_cumulative_costs = pd.DataFrame(data["Total Cumulative Costs"], columns=["Total Cumulative Costs"])
-df_total_license_fee_monthly = pd.DataFrame(data["Total License Fee Monthly (All Models)"], columns=["Total License Fee Monthly (All Models)"])
-df_total_cumulative_license_fee = pd.DataFrame(data["Total Cumulative License Fee (All Models)"], columns=["Total Cumulative License Fee (All Models)"])
-df_sales_commission_per_month = pd.DataFrame(data["Sales Commission Per Month"], columns=["Sales Commission Per Month"])
-df_total_cumulative_sales_commission = pd.DataFrame(data["Total Cumulative Sales Commission"], columns=["Total Cumulative Sales Commission"])
-df_cash_flow_per_month = pd.DataFrame(data["Cash Flow Per Month"], columns=["Cash Flow Per Month"])
-df_total_cumulative_cash_flow = pd.DataFrame(data["Total Cumulative Cash Flow"], columns=["Total Cumulative Cash Flow"])
 
-# Define the data for each DataFrame
-data_starter = {
-    "New Partners (Starter)": new_partners_starter,
-    "Cumulative Partners (Starter)": cumulative_partners_starter,
-    "New Locations (Starter)": new_locations_starter,
-    "Cumulative Locations (Starter)": cumulative_locations_starter,
-    "Cumulative Gateways (Starter)": cumulative_gateways_starter,
-    "Cumulative Cameras (Starter)": cumulative_cameras_starter,
-    "Cumulative Location License Fees (Starter)": cumulative_location_license_fees_starter,
-    "Cumulative Gateway License Fees (Starter)": cumulative_gateway_license_fees_starter,
-    "Cumulative Cameras License Fees (Starter)": cumulative_cameras_license_fees_starter,
-    "Total License Fee (Starter)": total_license_fee_starter
-}
-"""
-data_advanced = {
-    "New Partners (Advanced)": new_partners_advanced,
-    "Cumulative Partners (Advanced)": cumulative_partners_advanced,
-    "New Locations (Advanced)": new_locations_advanced,
-    "Cumulative Locations (Advanced)": cumulative_locations_advanced,
-    "Cumulative Gateways (Advanced)": cumulative_gateways_advanced,
-    "Cumulative Cameras (Advanced)": cumulative_cameras_advanced,
-    "Cumulative Location License Fees (Advanced)": cumulative_location_license_fees_advanced,
-    "Cumulative Gateway License Fees (Advanced)": cumulative_gateway_license_fees_advanced,
-    "Cumulative Cameras License Fees (Advanced)": cumulative_cameras_license_fees_advanced,
-    "Total License Fee (Advanced)": total_license_fee_advanced
-}
-
-data_enterprise = {
-    "New Partners (Enterprise)": new_partners_enterprise,
-    "Cumulative Partners (Enterprise)": cumulative_partners_enterprise,
-    "New Locations (Enterprise)": new_locations_enterprise,
-    "Cumulative Locations (Enterprise)": cumulative_locations_enterprise,
-    "Cumulative Gateways (Enterprise)": cumulative_gateways_enterprise,
-    "Cumulative Cameras (Enterprise)": cumulative_cameras_enterprise,
-    "Cumulative Location License Fees (Enterprise)": cumulative_location_license_fees_enterprise,
-    "Cumulative Gateway License Fees (Enterprise)": cumulative_gateway_license_fees_enterprise,
-    "Cumulative Cameras License Fees (Enterprise)": cumulative_cameras_license_fees_enterprise,
-    "Total License Fee (Enterprise)": total_license_fee_enterprise
-}
-"""
-# Define the data for valuation per year
-valuation_data = {
-    "Year": list(range(1, years+1)),
-    "Valuation": valuation_per_year
-}
-
-# Round each value in the valuation_per_year list to 0 decimal places
-for i in range(len(valuation_per_year)):
-    valuation_per_year[i] = round(valuation_per_year[i], 0)
+results_df = pd.DataFrame.from_dict(data)
 
 
-
-# Create DataFrame
-df_valuation_per_year = pd.DataFrame(valuation_data)
 
 
 # Create DataFrames
-df_starter = pd.DataFrame(data_starter)
-df_advanced = pd.DataFrame(data_advanced)
-df_enterprise = pd.DataFrame(data_enterprise)
+df_starter = model_output_to_dataframe(starter_model_output, "Starter")
+df_advanced = model_output_to_dataframe(advanced_model_output, "Advanced")
+df_enterprise = model_output_to_dataframe(enterprise_model_output, "Enterprise")
+
+# Valuation Df
+
+valuation_df = pd.DataFrame(formatted_valuation, columns=["Valuation Per Year"])
 
 # Concatenate all DataFrames vertically
 df_partner_business_model = pd.concat([df_starter,
                                        df_advanced,
                                        df_enterprise,
-                                       df_total_cumulative_costs, 
-                                       df_total_license_fee_monthly,
-                                       df_total_cumulative_license_fee,
-                                       df_sales_commission_per_month,
-                                       df_total_cumulative_sales_commission,
-                                       df_cash_flow_per_month,
-                                       df_total_cumulative_cash_flow,
-                                       df_valuation_per_year], axis=1)
+                                       results_df,
+                                       valuation_df], axis=1)
 
 # Write the concatenated DataFrame to a CSV file
 df_partner_business_model.to_csv("Partner_Business_Model.csv", index=False)
