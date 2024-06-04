@@ -21,7 +21,7 @@ def generate_dataframe(params: dict[str, ModelParams],
                        sales_params: SalesParams, 
                        valuation_params: ValuationParams,
                        output_path: str):
-    
+    MONTHS = list(params.values())[0].months
     model_outputs = {name: get_locations(params) for name, params in params.items()}
 
     print("===================")
@@ -34,7 +34,13 @@ def generate_dataframe(params: dict[str, ModelParams],
     print("===================")
     print()
 
-    cost_per_month = get_costs(cost_params, list(params.values())[0].months)
+    cumulative_locations = [
+        sum(x) for x in zip(
+            *(model_output.cumulative_locations for model_output in model_outputs.values())
+        )
+    ]
+
+    cost_per_month = get_costs(cost_params, MONTHS)
     cumulative_costs = list(accumulate(cost_per_month))
     print("TOTAL CUMULATIVE COSTS: ", cumulative_costs)
 
@@ -73,13 +79,30 @@ def generate_dataframe(params: dict[str, ModelParams],
 
 
 
+
     valuation_per_year = get_yearly_valuation(valuation_params, total_cumulative_cash_flow)
     formatted_valuation = [ format_money(elem) for elem in valuation_per_year ]
     print("VALUATION PER YEAR: ", formatted_valuation)
 
+    annual_revenue = [
+        total_cumulative_license_fee_all_models[i*12-1]
+        for i in range(1, MONTHS//12+1)
+    ]
+
+    monthly_recurring_revenue = [
+        total_license_fee_per_month_sum[i*12-1]
+        for i in range(1, MONTHS//12+1)
+    ]
+
+    yearly_locations = [
+        cumulative_locations[i*12-1]
+        for i in range(1, MONTHS//12+1)
+    ]
+
 
     # Define the data for each DataFrame
     data = {
+        "Total Cumulative Locations": cumulative_locations,
         "Total Cumulative Costs": cumulative_costs,
         "Total License Fee Monthly (All Models)": total_license_fee_per_month_sum,
         "Total Cumulative License Fee (All Models)": total_cumulative_license_fee_all_models,
@@ -90,7 +113,7 @@ def generate_dataframe(params: dict[str, ModelParams],
     }
 
 
-    results_df = pd.DataFrame.from_dict(data)
+    monthly_results_df = pd.DataFrame.from_dict(data)
 
 
 
@@ -100,12 +123,18 @@ def generate_dataframe(params: dict[str, ModelParams],
         model_output_to_dataframe(output, name) for name, output in model_outputs.items()
     ]
 
-    # Valuation Df
+    # Yearly Results
+    yearly_results = {
+        "Annual Revenue": annual_revenue,
+        "Monthly Recurring Revenue": monthly_recurring_revenue,
+        "Yearly Locations": yearly_locations,
+        "Valuation Per Year": formatted_valuation
+    }
 
-    valuation_df = pd.DataFrame(formatted_valuation, columns=["Valuation Per Year"])
+    yearly_df = pd.DataFrame.from_dict(yearly_results)
 
 
-    dataframes.extend([results_df, valuation_df])
+    dataframes.extend([monthly_results_df, yearly_df])
 
     # Concatenate all DataFrames vertically
     df_partner_business_model = pd.concat(dataframes, axis=1)
