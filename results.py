@@ -39,6 +39,13 @@ def generate_dataframe(params: dict[str, ModelParams],
             *(model_output.cumulative_locations for model_output in model_outputs.values())
         )
     ]
+    
+
+    cumulative_partners = [
+        sum(x) for x in zip(
+            *(model_output.cumulative_partners if model_output.cumulative_partners else [0]*len(model_output.cumulative_locations) for model_output in model_outputs.values())
+        )
+    ]
 
     cost_per_month = get_costs(cost_params, MONTHS)
     cumulative_costs = list(accumulate(cost_per_month))
@@ -99,6 +106,11 @@ def generate_dataframe(params: dict[str, ModelParams],
         for i in range(1, MONTHS//12+1)
     ]
 
+    yearly_partners = [
+        cumulative_partners[i*12-1]
+        for i in range(1, MONTHS//12+1)
+    ]
+
 
     # Define the data for each DataFrame
     data = {
@@ -126,6 +138,7 @@ def generate_dataframe(params: dict[str, ModelParams],
     # Yearly Results
     yearly_results = {
         "Annual Revenue": annual_revenue,
+        "Cumulative Partners": yearly_partners,
         "Monthly Recurring Revenue": monthly_recurring_revenue,
         "Yearly Locations": yearly_locations,
         "Valuation Per Year": formatted_valuation
