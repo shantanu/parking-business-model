@@ -1,5 +1,5 @@
 
-from operator_results import generate_dataframe
+from results import generate_dataframe
 from model_params import *
 
 
