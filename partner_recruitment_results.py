@@ -131,9 +131,7 @@ print_model_output("ENTERPRISE", enterprise_model_output)
 print("===================")
 print()
 
-cost_params: CostParams = CostParams(
-    cost_per_month=100000
-)
+
 
 cost_per_month = get_costs(cost_params, MONTHS)
 cumulative_costs = list(accumulate(cost_per_month))
@@ -154,9 +152,6 @@ print("TOTAL CUMULATIVE LICENSE FEE ALL MODELS: ", total_cumulative_license_fee_
 
 
 
-sales_params: SalesParams = SalesParams(
-    commission_rate=SALES_COMMISSION
-)
 
 sales_commission_per_month = get_sales_commission(sales_params, total_license_fee_per_month_sum)
 print("SALES COMMISSION PER MONTH: ", sales_commission_per_month)
@@ -184,10 +179,7 @@ print("TOTAL CUMULATIVE CASH FLOW : ", total_cumulative_cash_flow)
 
 
 
-valuation_params: ValuationParams = ValuationParams(
-    years=MONTHS//12,
-    discount_rate=DISCOUNT_RATE
-)
+
 
 valuation_per_year = get_yearly_valuation(valuation_params, total_cumulative_cash_flow)
 formatted_valuation = [ format_money(elem) for elem in valuation_per_year ]
