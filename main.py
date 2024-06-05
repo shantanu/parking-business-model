@@ -27,7 +27,7 @@ parking_operator_model_params: ModelParams = ModelParams(
 )
 
 cost_params: CostParams = CostParams(
-    cost_per_month=100000
+    cost_per_month=FIXED_COST
 )
 
 sales_params: SalesParams = SalesParams(
