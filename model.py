@@ -39,7 +39,7 @@ def get_growth_model_locations(params: ModelParams) -> list[float]:
     new_locations.extend([model_params.next_six_months_locations] * 6)
 
     remaining_months_locations = (model_params.total_locations - (model_params.first_six_months_locations*6) \
-                                  - (model_params.next_six_months_locations*6)) // params.months
+                                  - (model_params.next_six_months_locations*6) + (params.months-1)) // params.months
 
     new_locations.extend([remaining_months_locations] * (params.months - 12))
 

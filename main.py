@@ -15,7 +15,7 @@ parking_operator_model_params: ModelParams = ModelParams(
     location_model_params=GrowthModelParams(
         first_six_months_locations=0,
         next_six_months_locations=0,
-        total_locations=0,
+        total_locations=100,
     ),
     pricing_params=PricingParams(
         location_license_fee=350,
