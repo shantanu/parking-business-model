@@ -38,83 +38,56 @@ generate_dataframe(
     valuation_params,
     "Operator_Business_model_output.csv",
 )
-"""
+
 
 # Starter Model Parameters
 starter_model_params: ModelParams = ModelParams(
-    months = MONTHS,
-    gateways_per_location = 5,
-    cameras_per_gateway = 30,
+    months=MONTHS,
+    gateways_per_location=5,
+    cameras_per_gateway=30,
     partner_params=PartnerParams(
-        num_partners=5,
-        max_locations=10,
-        months_between_partners=1
+        num_partners=5, max_locations=10, months_between_partners=1
     ),
     location_model_params=LinearModelParams(
-        first_month_of_location=3,
-        months_between_location=5
+        first_month_of_location=3, months_between_location=5
     ),
     pricing_params=PricingParams(
-        location_license_fee = 500,
-        gateway_license_fee = 100,
-        camera_license_fee = 0
-    )
+        location_license_fee=500, gateway_license_fee=100, camera_license_fee=0
+    ),
 )
 
 
 # Advanced Model Parameters
 advanced_model_params: ModelParams = ModelParams(
-    months = MONTHS,
-    gateways_per_location = 10,
-    cameras_per_gateway = 70,
+    months=MONTHS,
+    gateways_per_location=10,
+    cameras_per_gateway=70,
     partner_params=PartnerParams(
-        num_partners=10,
-        max_locations=25,
-        months_between_partners=2
+        num_partners=10, max_locations=25, months_between_partners=2
     ),
     location_model_params=LinearModelParams(
-        first_month_of_location=3,
-        months_between_location=3
+        first_month_of_location=3, months_between_location=3
     ),
     pricing_params=PricingParams(
-        location_license_fee = 350,
-        gateway_license_fee = 75,
-        camera_license_fee = 0
-    )
+        location_license_fee=350, gateway_license_fee=75, camera_license_fee=0
+    ),
 )
 
 
 # Enterprise Model Parameters
 enterprise_model_params: ModelParams = ModelParams(
-    months = MONTHS,
-    gateways_per_location = 15,
-    cameras_per_gateway = 100,
+    months=MONTHS,
+    gateways_per_location=15,
+    cameras_per_gateway=100,
     partner_params=PartnerParams(
-        num_partners=5,
-        max_locations=40,
-        months_between_partners=1
+        num_partners=5, max_locations=40, months_between_partners=1
     ),
     location_model_params=LinearModelParams(
-        first_month_of_location=3,
-        months_between_location=3
+        first_month_of_location=3, months_between_location=3
     ),
     pricing_params=PricingParams(
-        location_license_fee = 200,
-        gateway_license_fee = 50,
-        camera_license_fee = 0
-    )
-)
-
-generate_dataframe(
-    {
-        "Starter": starter_model_params,
-        "Advanced": advanced_model_params,
-        "Enterprise": enterprise_model_params
-    },
-    cost_params,
-    sales_params,
-    valuation_params,
-    "Partner_Business_model_output.csv"
+        location_license_fee=200, gateway_license_fee=50, camera_license_fee=0
+    ),
 )
 
 generate_dataframe(
@@ -122,11 +95,22 @@ generate_dataframe(
         "Starter": starter_model_params,
         "Advanced": advanced_model_params,
         "Enterprise": enterprise_model_params,
-        "Operator": parking_operator_model_params
     },
     cost_params,
     sales_params,
     valuation_params,
-    "Combined_Business_model_output.csv"
+    "Partner_Business_model_output.csv",
 )
-"""
+
+generate_dataframe(
+    {
+        "Starter": starter_model_params,
+        "Advanced": advanced_model_params,
+        "Enterprise": enterprise_model_params,
+        "Operator": parking_operator_model_params,
+    },
+    cost_params,
+    sales_params,
+    valuation_params,
+    "Combined_Business_model_output.csv",
+)
