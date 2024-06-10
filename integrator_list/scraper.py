@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 print("hi")
 # Load HTML file
 
-filenames = [f"list{i}.html" for i in range(1, 18)]
+filenames = [f"Reseller{i}.html" for i in range(1, 23)]
 
 # Initialize lists to store extracted data
 company_names = []
@@ -44,4 +44,4 @@ df = pd.DataFrame(
 print(df.head())
 
 # Write to CSV
-df.to_csv("company_info.csv", index=False)
+df.to_csv("Reseller_info.csv", index=False)

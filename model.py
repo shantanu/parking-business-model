@@ -57,7 +57,7 @@ def get_growth_model_locations(params: ModelParams) -> list[float]:
             - (model_params.first_six_months_locations * 6)
             - (model_params.next_six_months_locations * 6)
         )
-        / params.months
+        / (params.months-12)
     )
 
     while len(new_locations) < params.months:
