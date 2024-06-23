@@ -182,6 +182,16 @@ acx_valuation_per_year = get_yearly_valuation(
 acx_formatted_valuation = [format_money(elem) for elem in acx_valuation_per_year]
 print("VALUATION PER YEAR: ", acx_formatted_valuation)
 
+data = {
+    "ACX Cumulative Revenue": acx_cumulative_revenue,
+    "ACX Cost Per Month": acx_cost_per_month,
+    "ACX Cumulative Costs": acx_cumulative_costs,
+    "ACX Cumulative Cash Flows": acx_cumulative_cash_flows,
+}
+acx_df = pd.DataFrame.from_dict(data)
+acx_df = pd.concat([acx_df, pd.DataFrame(acx_formatted_valuation)], axis=1)
+
+acx_df.to_csv("ACX_model_output.csv")
 
 output_df = pd.DataFrame.from_dict(
     {
