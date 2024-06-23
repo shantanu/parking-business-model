@@ -36,6 +36,7 @@ generate_dataframe(
     cost_params,
     sales_params,
     valuation_params,
+    "Smart Parking Operator",
     "Operator_Business_model_output.csv",
 )
 
@@ -99,6 +100,7 @@ generate_dataframe(
     cost_params,
     sales_params,
     valuation_params,
+    "Smart Parking Partner",
     "Partner_Business_model_output.csv",
 )
 
@@ -112,5 +114,6 @@ generate_dataframe(
     cost_params,
     sales_params,
     valuation_params,
+    "Smart Parking Combined",
     "Combined_Business_model_output.csv",
 )
