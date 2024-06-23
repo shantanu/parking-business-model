@@ -157,3 +157,5 @@ def generate_dataframe(params: dict[str, ModelParams],
     df_partner_business_model.to_csv(output_path, index=False)
 
     print(f"All DataFrames have been successfully combined and written to {output_path}.")
+
+    return df_partner_business_model
