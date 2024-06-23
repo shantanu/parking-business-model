@@ -20,6 +20,7 @@ def generate_dataframe(params: dict[str, ModelParams],
                        cost_params: CostParams,
                        sales_params: SalesParams, 
                        valuation_params: ValuationParams,
+                       model_name: str,
                        output_path: str):
     MONTHS = list(params.values())[0].months
     model_outputs = {name: get_locations(params) for name, params in params.items()}
@@ -137,11 +138,11 @@ def generate_dataframe(params: dict[str, ModelParams],
 
     # Yearly Results
     yearly_results = {
-        "Annual Revenue": annual_revenue,
-        "Cumulative Partners": yearly_partners,
-        "Monthly Recurring Revenue": monthly_recurring_revenue,
-        "Yearly Locations": yearly_locations,
-        "Valuation Per Year": formatted_valuation
+        f"Annual Revenue: {model_name}": annual_revenue,
+        f"Cumulative Partners: {model_name}": yearly_partners,
+        f"Monthly Recurring Revenue: {model_name}": monthly_recurring_revenue,
+        f"Yearly Locations: {model_name}": yearly_locations,
+        f"Valuation Per Year: {model_name}": formatted_valuation
     }
 
     yearly_df = pd.DataFrame.from_dict(yearly_results)
@@ -156,3 +157,5 @@ def generate_dataframe(params: dict[str, ModelParams],
     df_partner_business_model.to_csv(output_path, index=False)
 
     print(f"All DataFrames have been successfully combined and written to {output_path}.")
+
+    return df_partner_business_model
