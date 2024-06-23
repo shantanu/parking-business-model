@@ -110,17 +110,17 @@ def get_locations(params: ModelParams):
     )
 
     cumulative_locations = list(accumulate(new_locations))
-    cumulative_location_license_fees = list(accumulate(location_license_fees))
+    cumulative_location_license_fees = list((location_license_fees))
 
     cumulative_gateways = [
         params.gateways_per_location * locs for locs in cumulative_locations
     ]
-    cumulative_gateway_license_fees = list(accumulate(gateway_license_fees))
+    cumulative_gateway_license_fees = list((gateway_license_fees))
 
     cumulative_cameras = [
         params.cameras_per_gateway * gateways for gateways in cumulative_gateways
     ]
-    cumulative_cameras_license_fees = list(accumulate(cameras_license_fees))
+    cumulative_cameras_license_fees = list((cameras_license_fees))
 
     total_license_fee = [
         sum(x)

@@ -14,10 +14,10 @@ parking_operator_model_params: ModelParams = ModelParams(
     location_model_params=GrowthModelParams(
         first_six_months_locations=0,
         next_six_months_locations=0,
-        total_locations=800,
+        total_locations=2400,
     ),
     pricing_params=PricingParams(
-        location_license_fee=100, gateway_license_fee=25, camera_license_fee=0
+        location_license_fee=1000, gateway_license_fee=200, camera_license_fee=0
     ),
     gateways_per_location=15,
     cameras_per_gateway=30,
@@ -43,16 +43,16 @@ generate_dataframe(
 # Starter Model Parameters
 starter_model_params: ModelParams = ModelParams(
     months=MONTHS,
-    gateways_per_location=5,
+    gateways_per_location=10,
     cameras_per_gateway=30,
     partner_params=PartnerParams(
-        num_partners=10, max_locations=10, months_between_partners=1
+        num_partners=20, max_locations=10, months_between_partners=1
     ),
     location_model_params=LinearModelParams(
         first_month_of_location=3, months_between_location=3
     ),
     pricing_params=PricingParams(
-        location_license_fee=500, gateway_license_fee=75, camera_license_fee=0
+        location_license_fee=1250, gateway_license_fee=250, camera_license_fee=0
     ),
 )
 
@@ -69,7 +69,7 @@ advanced_model_params: ModelParams = ModelParams(
         first_month_of_location=3, months_between_location=3
     ),
     pricing_params=PricingParams(
-        location_license_fee=200, gateway_license_fee=50, camera_license_fee=0
+        location_license_fee=1000, gateway_license_fee=200, camera_license_fee=0
     ),
 )
 
@@ -86,7 +86,7 @@ enterprise_model_params: ModelParams = ModelParams(
         first_month_of_location=3, months_between_location=3
     ),
     pricing_params=PricingParams(
-        location_license_fee=100, gateway_license_fee=25, camera_license_fee=0
+        location_license_fee=750, gateway_license_fee=175, camera_license_fee=0
     ),
 )
 
