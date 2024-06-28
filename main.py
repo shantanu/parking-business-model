@@ -248,66 +248,67 @@ output_df.to_csv("all_valuations.csv")
 
 
 # Small Manufacturing Company Deployment (SMCD) Model Parameters
-smcd_params: ModelParams = ModelParams(
-    months=MONTHS,
-    sku_per_production_line=10,
-    cameras_per_production_line=10,
-    smcd_params=PartnerParams(
-        num_smcd=50, max_production_line=10, months_between_smcd=1
-    ),
-    production_line_model_params=LinearModelParams(
-        first_month_of_production_line=3, months_between_production_line=3
-    ),
-    pricing_params=PricingParams(
-        production_line_license_fee=0, per_sku_license_fee=1500, camera_license_fee=0
-    ),
-)
+# smcd_params: ModelParams = ModelParams(
+#     months=MONTHS,
+#     sku_per_production_line=10,
+#     cameras_per_production_line=10,
+#     smcd_params=PartnerParams(
+#         num_smcd=50, max_production_line=10, months_between_smcd=1
+#     ),
+#     production_line_model_params=LinearModelParams(
+#         first_month_of_production_line=3, months_between_production_line=3
+#     ),
+#     pricing_params=PricingParams(
+#         production_line_license_fee=0, per_sku_license_fee=1500, camera_license_fee=0
+#     ),
+# )
 
 
-# Medium Manufacturing Company Deployment (MMCD) Model Parameters
-mmcd_model_params: ModelParams = ModelParams(
-    months=MONTHS,
-    sku_per_production_line=15,
-    cameras_per_production_line=20,
-    mmcd_params=PartnerParams(
-        num_mmcd=30, max_production_line=20, months_between_mmcd=2
-    ),
-    production_line_model_params=LinearModelParams(
-        first_month_of_production_line=3, months_between_production_line=3
-    ),
-    pricing_params=PricingParams(
-        production_line_license_fee=0, per_sku_license_fee=1500, camera_license_fee=0
-    ),
-)
+# # Medium Manufacturing Company Deployment (MMCD) Model Parameters
+# mmcd_model_params: ModelParams = ModelParams(
+#     months=MONTHS,
+#     sku_per_production_line=15,
+#     cameras_per_production_line=20,
+#     mmcd_params=PartnerParams(
+#         num_mmcd=30, max_production_line=20, months_between_mmcd=2
+#     ),
+#     production_line_model_params=LinearModelParams(
+#         first_month_of_production_line=3, months_between_production_line=3
+#     ),
+#     pricing_params=PricingParams(
+#         production_line_license_fee=0, per_sku_license_fee=1500, camera_license_fee=0
+#     ),
+# )
 
 
-# Large Manufacturing Company Deployment (LMCD) Model Parameters
-lmcd_model_params: ModelParams = ModelParams(
-    months=MONTHS,
-    sku_per_production_line=20,
-    cameras_per_production_line=30,
-    lmcd_params=PartnerParams(
-        num_lmcd=20, max_production_line=30, months_between_lmcd=1
-    ),
-    production_line_model_params=LinearModelParams(
-        first_month_of_production_line=3, months_between_production_line=3
-    ),
-    pricing_params=PricingParams(
-        production_line_license_fee=0, per_sku_license_fee=1500, camera_license_fee=0
-    ),
-)
+# # Large Manufacturing Company Deployment (LMCD) Model Parameters
+# lmcd_model_params: ModelParams = ModelParams(
+#     months=MONTHS,
+#     sku_per_production_line=20,
+#     cameras_per_production_line=30,
+#     lmcd_params=PartnerParams(
+#         num_lmcd=20, max_production_line=30, months_between_lmcd=1
+#     ),
+#     production_line_model_params=LinearModelParams(
+#         first_month_of_production_line=3, months_between_production_line=3
+#     ),
+#     pricing_params=PricingParams(
+#         production_line_license_fee=0, per_sku_license_fee=1500, camera_license_fee=0
+#     ),
+# )
 
 generate_dataframe(
     {
-        "Small Deployment": smcd_model_params,
-        "Medium Deployment": mmcd_model_params,
-        "Large Deployment": lmcd_model_params,
+        "Small Deployment": starter_model_params,
+        "Medium Deployment": advanced_model_params,
+        "Large Deployment": enterprise_model_params,
     },
     cost_params,
     sales_params,
     valuation_params,
     "AI for Manufacturing",
     "AI_Company_model_output.csv",
+    rename_columns=True
 )
 
 # manufacturing_company_df = generate_dataframe(
