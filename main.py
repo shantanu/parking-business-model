@@ -1,4 +1,4 @@
-from results import generate_dataframe
+from results import generate_dataframe, rename_columns_ai4m
 from model_params import *
 from costs import get_costs
 import numpy as np
@@ -146,14 +146,16 @@ ai4m_model_params: ModelParams = ModelParams(
 ai4m_df = generate_dataframe(
     {
         "AI4M": ai4m_model_params,
+        "medium": alksjdf,
+        "large": larger,
     },
     ai4m_cost_params,
     sales_params,
     valuation_params,
     "AI4M",
     "AI4M_model_output.csv",
+    rename_columns=True,
 )
-
 
 acx_cumulative_revenue = (
     smart_parking_df["Total Cumulative Sales Commission"]
