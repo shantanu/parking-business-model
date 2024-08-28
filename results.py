@@ -124,7 +124,7 @@ def generate_dataframe(
     print("VALUATION PER YEAR: ", formatted_valuation)
 
     annual_revenue = [
-        total_cumulative_license_fee_all_models[i * 12 - 1]
+        total_cumulative_license_fee_all_models[i * 12 - 1]  if i == 1 else (total_cumulative_license_fee_all_models[i * 12 - 1] - total_cumulative_license_fee_all_models[(i-1) * 12 - 1])
         for i in range(1, MONTHS // 12 + 1)
     ]
 

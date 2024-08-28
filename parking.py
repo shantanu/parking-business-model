@@ -10,7 +10,7 @@ from itertools import accumulate
 
 
 MONTHS: int = 60
-FIXED_COST: int = 230000
+FIXED_COST: int = 160000
 SALES_COMMISSION: float = 0.25
 DISCOUNT_RATE: float = 0.10
 
@@ -21,10 +21,10 @@ def generate_parking_dataframe():
         location_model_params=GrowthModelParams(
             first_six_months_locations=0,
             next_six_months_locations=0,
-            total_locations=0,
+            total_locations=2400,
         ),
         pricing_params=PricingParams(
-            location_license_fee=0, gateway_license_fee=0, camera_license_fee=0
+            location_license_fee=750, gateway_license_fee=175, camera_license_fee=0
         ),
         gateways_per_location=15,
         cameras_per_gateway=30,
@@ -52,15 +52,15 @@ def generate_parking_dataframe():
     starter_model_params: ModelParams = ModelParams(
         months=MONTHS,
         gateways_per_location=10,
-        cameras_per_gateway=0,
+        cameras_per_gateway=30,
         partner_params=PartnerParams(
-            num_partners=0, max_locations=10, months_between_partners=1
+            num_partners=10, max_locations=10, months_between_partners=1
         ),
         location_model_params=LinearModelParams(
-            first_month_of_location=3, months_between_location=3
+            first_month_of_location=2, months_between_location=3
         ),
         pricing_params=PricingParams(
-            location_license_fee=25000, gateway_license_fee=0, camera_license_fee=0
+            location_license_fee=1250, gateway_license_fee=250, camera_license_fee=0
         ),
     )
 
@@ -68,16 +68,16 @@ def generate_parking_dataframe():
     # Advanced Model Parameters
     advanced_model_params: ModelParams = ModelParams(
         months=MONTHS,
-        gateways_per_location=20,
-        cameras_per_gateway=0,
+        gateways_per_location=12,
+        cameras_per_gateway=50,
         partner_params=PartnerParams(
-            num_partners=0, max_locations=20, months_between_partners=2
+            num_partners=20, max_locations=40, months_between_partners=1
         ),
         location_model_params=LinearModelParams(
-            first_month_of_location=3, months_between_location=3
+            first_month_of_location=2, months_between_location=3
         ),
         pricing_params=PricingParams(
-            location_license_fee=27500, gateway_license_fee=0, camera_license_fee=0
+            location_license_fee=1000, gateway_license_fee=200, camera_license_fee=0
         ),
     )
 
@@ -85,16 +85,16 @@ def generate_parking_dataframe():
     # Enterprise Model Parameters
     enterprise_model_params: ModelParams = ModelParams(
         months=MONTHS,
-        gateways_per_location=30,
-        cameras_per_gateway=0,
+        gateways_per_location=20,
+        cameras_per_gateway=80,
         partner_params=PartnerParams(
-            num_partners=20, max_locations=100, months_between_partners=3
+            num_partners=5, max_locations=50, months_between_partners=1
         ),
         location_model_params=LinearModelParams(
-            first_month_of_location=3, months_between_location=1
+            first_month_of_location=3, months_between_location=3
         ),
         pricing_params=PricingParams(
-            location_license_fee=30000, gateway_license_fee=0, camera_license_fee=0
+            location_license_fee=750, gateway_license_fee=175, camera_license_fee=0
         ),
     )
 

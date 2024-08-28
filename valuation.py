@@ -18,7 +18,7 @@ def get_yearly_valuation(
 ) -> list[float]:
     return [
         discount(
-            monthly_cumulative_cash_flow[year * 12 - 1],
+            monthly_cumulative_cash_flow[year * 12 - 1]  if year == 1 else (monthly_cumulative_cash_flow[year * 12 - 1] - monthly_cumulative_cash_flow[(year-1) * 12 - 1]),
             valuation_params.discount_rate,
             year,
         )

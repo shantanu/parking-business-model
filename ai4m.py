@@ -10,7 +10,7 @@ from itertools import accumulate
 
 
 MONTHS: int = 60
-FIXED_COST: int = 230000
+FIXED_COST: int = 250000
 SALES_COMMISSION: float = 0.25
 DISCOUNT_RATE: float = 0.10
 
@@ -27,10 +27,10 @@ def generate_ai4m_dataframe():
     # Small Model Parameters
     small_model_params: ModelParams = ModelParams(
         months=MONTHS,
-        gateways_per_location=10, # skus per location
+        gateways_per_location=10, # skus per production line
         cameras_per_gateway=0, # irrelevant
         partner_params=PartnerParams(
-            num_partners=0, # num_companies
+            num_partners=30, # num_companies
             max_locations=10, # production lines
             months_between_partners=1 # months between companies
         ),
@@ -39,7 +39,7 @@ def generate_ai4m_dataframe():
             months_between_location=3 # months between production line
         ),
         pricing_params=PricingParams(
-            location_license_fee=25000, # per production line fee
+            location_license_fee=15000, # per production line fee
             gateway_license_fee=0, # sku license fee
             camera_license_fee=0 # not used
         ),
@@ -49,19 +49,19 @@ def generate_ai4m_dataframe():
     # Large Model Parameters
     large_model_params: ModelParams = ModelParams(
         months=MONTHS,
-        gateways_per_location=20, # skus per location
+        gateways_per_location=20, # skus per production line
         cameras_per_gateway=0, # irrelevant
         partner_params=PartnerParams(
-            num_partners=0, # num_companies
-            max_locations=20, # production lines
-            months_between_partners=2 # months between companies
+            num_partners=20, # num_companies
+            max_locations=25, # production lines
+            months_between_partners=1 # months between companies
         ),
         location_model_params=LinearModelParams(
             first_month_of_location=3, # first month to new production line
             months_between_location=3 # months between production line
         ),
         pricing_params=PricingParams(
-            location_license_fee=27500,  # per production line fee
+            location_license_fee=17500,  # per production line fee
             gateway_license_fee=0, # sku license fee
             camera_license_fee=0 # not used
         ),
@@ -71,19 +71,19 @@ def generate_ai4m_dataframe():
     # Enterprise Model Parameters
     enterprise_model_params: ModelParams = ModelParams(
         months=MONTHS,
-        gateways_per_location=30, # skus per location
+        gateways_per_location=30, # skus per production line
         cameras_per_gateway=0, # irrelevant
         partner_params=PartnerParams(
-            num_partners=20, # num_companies
-            max_locations=100, # production lines
-            months_between_partners=3 # months between companies
+            num_partners=10, # num_companies
+            max_locations=40, # production lines
+            months_between_partners=1 # months between companies
         ),
         location_model_params=LinearModelParams(
             first_month_of_location=3, # first month to new production line
-            months_between_location=1 # months between production line
+            months_between_location=3 # months between production line
         ),
         pricing_params=PricingParams(
-            location_license_fee=30000,  # per production line fee
+            location_license_fee=20000,  # per production line fee
             gateway_license_fee=0, # sku license fee
             camera_license_fee=0 # not used
         ),
